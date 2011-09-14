@@ -8,7 +8,7 @@ plugin = Plugin('4Players Videos', 'plugin.video.4players', __file__)
 def show_categories():
     categories = scraper.getCategories()
     items = [{'label': category,
-              'url': plugin.url_for('show_videos', 
+              'url': plugin.url_for('show_videos',
                                     category=category, page='1'),
              } for category in categories]
     return plugin.add_items(items)
@@ -27,14 +27,14 @@ def show_videos(category, page):
              } for video in videos]
     if int(page) < int(last_page_num):
         next_page = str(int(page) + 1)
-        items.append({'label': '>> %s %s >>' % (plugin.get_string(30001), 
+        items.append({'label': '>> %s %s >>' % (plugin.get_string(30001),
                                                 next_page),
                       'url': plugin.url_for('show_videos',
                                             category=category,
                                             page=next_page)})
     if int(page) > 1:
         prev_page = str(int(page) - 1)
-        items.insert(0, {'label': '<< %s %s <<' % (plugin.get_string(30001), 
+        items.insert(0, {'label': '<< %s %s <<' % (plugin.get_string(30001),
                                                    prev_page),
                          'url': plugin.url_for('show_videos',
                                                category=category,
