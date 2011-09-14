@@ -13,8 +13,8 @@ FILTERS = ('Alle', 'TopViews', 'TopRated', 'CDROM',
            'PSP', 'Video-Fazit')
 
 URL_PREFIX = 'http://www.4players.de/4players.php/tvplayer/4PlayersTV/'
-           
-           
+
+
 def getVideos(filter=None, page=1):
     if filter not in FILTERS:
         filter = FILTERS[0]
@@ -63,7 +63,6 @@ def getVideos(filter=None, page=1):
             views = int(m.groupdict()['views'])
         else:
             views = 0
-            #
          # image
         r = 'skimimageurl="(?P<img_url>[^"]+)"'
         m = re.search(r, unicode(video_item))
