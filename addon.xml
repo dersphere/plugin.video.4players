@@ -10,7 +10,9 @@
   </extension>
   <extension point="xbmc.addon.metadata">
     <platform>all</platform>
-    <summary>Watch videos from 4players.de</summary>
-    <description>Watch videos from 4players.de</description>
+    <summary lang="de">Computerspiel-Videos und -Trailer von www.4players.de</summary>
+    <summary lang="en">Watch game videos and trailers from www.4players.de</summary>
+    <description lang="de">Bietet aktuelle Videos und Trailer zu Computer- und Konsolenspielen von der Webseite www.4players.de</description>
+    <description lang="en">You can watch all computer- and console-game videos and trailers from the german website www.4players.de</description>
   </extension>
 </addon>
