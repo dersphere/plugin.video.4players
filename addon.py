@@ -5,17 +5,17 @@ plugin = Plugin('4Players Videos', 'plugin.video.4players', __file__)
 
 
 @plugin.route('/', default=True)
-def show_filters():
-    filters = scraper.getFilters()
-    items = [{'label': filter,
-              'url': plugin.url_for('filter', filter=filter, page='1'),
-             } for filter in filters]
+def show_categories():
+    categories = scraper.getCategories()
+    items = [{'label': category,
+              'url': plugin.url_for('category', category=category, page='1'),
+             } for category in categories]
     return plugin.add_items(items)
 
 
-@plugin.route('/filter/<filter>/<page>/', name='filter')
-def show_videos(filter, page):
-    videos, last_page_num = scraper.getVideos(filter, page)
+@plugin.route('/category/<category>/<page>/', name='category')
+def show_videos(category, page):
+    videos, last_page_num = scraper.getVideos(category, page)
     items = [{'label': video['title'],
               'thumbnail': video['image'],
               'info': {'duration': video['length'],
@@ -27,14 +27,14 @@ def show_videos(filter, page):
     if int(page) < int(last_page_num):
         next_page = str(int(page) + 1)
         items.append({'label': '>> Page %s >>' % next_page,
-                      'url': plugin.url_for('filter',
-                                            filter=filter,
+                      'url': plugin.url_for('category',
+                                            category=category,
                                             page=next_page)})
     if int(page) > 1:
         prev_page = str(int(page) - 1)
         items.insert(0, {'label': '<< Page %s <<' % prev_page,
-                         'url': plugin.url_for('filter',
-                                               filter=filter,
+                         'url': plugin.url_for('category',
+                                               category=category,
                                                page=prev_page)})
     return plugin.add_items(items)
 

@@ -8,16 +8,16 @@ IPAD_USERAGENT = (u'Mozilla/5.0 (iPad; U; CPU OS OS 3_2 like '
                   u'HTML, like Gecko) Version/4.0.4 Mobile/7B'
                   u'367 Safari/531.21.10')
 
-FILTERS = ('Alle', 'TopViews', 'TopRated', 'CDROM',
-           'PlayStation2', 'PlayStation3', 'Wii', '360', 'NDS',
-           'PSP', 'Video-Fazit')
+CATEGORIES = ('Alle', 'TopViews', 'TopRated', 'CDROM',
+              'PlayStation2', 'PlayStation3', 'Wii', '360', 'NDS',
+              'PSP', 'Video-Fazit')
 
 URL_PREFIX = 'http://www.4players.de/4players.php/tvplayer/4PlayersTV/'
 
 
 def getVideos(filter=None, page=1):
-    if filter not in FILTERS:
-        filter = FILTERS[0]
+    if filter not in CATEGORIES:
+        filter = CATEGORIES[0]
     post = {'currentpage': page,
             'filter': filter,
             'funcname': 'aktuellevideos',
@@ -123,5 +123,5 @@ def getVideoFile(page_url):
     return tree.find('video')['src']
 
 
-def getFilters():
-    return FILTERS
+def getCategories():
+    return CATEGORIES
