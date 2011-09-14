@@ -8,32 +8,35 @@ plugin = Plugin('4Players Videos', 'plugin.video.4players', __file__)
 def show_categories():
     categories = scraper.getCategories()
     items = [{'label': category,
-              'url': plugin.url_for('category', category=category, page='1'),
+              'url': plugin.url_for('show_videos', 
+                                    category=category, page='1'),
              } for category in categories]
     return plugin.add_items(items)
 
 
-@plugin.route('/category/<category>/<page>/', name='category')
+@plugin.route('/category/<category>/<page>/')
 def show_videos(category, page):
     videos, last_page_num = scraper.getVideos(category, page)
     items = [{'label': video['title'],
               'thumbnail': video['image'],
               'info': {'duration': video['length'],
-                       'releasedate': video['date']},
+                       'date': video['date']},
               'url': plugin.url_for('watch_video', url=video['url']),
               'is_folder': False,
               'is_playable': True,
              } for video in videos]
     if int(page) < int(last_page_num):
         next_page = str(int(page) + 1)
-        items.append({'label': '>> Page %s >>' % next_page,
-                      'url': plugin.url_for('category',
+        items.append({'label': '>> %s %s >>' % (plugin.get_string(30001), 
+                                                next_page),
+                      'url': plugin.url_for('show_videos',
                                             category=category,
                                             page=next_page)})
     if int(page) > 1:
         prev_page = str(int(page) - 1)
-        items.insert(0, {'label': '<< Page %s <<' % prev_page,
-                         'url': plugin.url_for('category',
+        items.insert(0, {'label': '<< %s %s <<' % (plugin.get_string(30001), 
+                                                   prev_page),
+                         'url': plugin.url_for('show_videos',
                                                category=category,
                                                page=prev_page)})
     return plugin.add_items(items)
