@@ -75,7 +75,7 @@ def getVideos(filter=None, page=1):
         else:
             date = ''
         # length
-        r = '(?P<min>[0-9]+):(?P<sec>[0-9]+) (Min\.|min)'
+        r = '(?P<min>[0-9]+):(?P<sec>[0-9]+) (Min\.|min|MIn\.)'
         m = re.search(r, unicode(rating_div))
         if m:
             length_dict = m.groupdict()
