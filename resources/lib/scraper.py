@@ -69,9 +69,9 @@ def getVideos(filter=None, page=1):
         m = re.search(r, unicode(rating_div))
         if m:
             date_dict = m.groupdict()
-            date = '%s-%s-%s' % (date_dict['year'],
+            date = '%s.%s.%s' % (date_dict['day'],
                                  date_dict['month'],
-                                 date_dict['day'])
+                                 date_dict['year'])
         else:
             date = ''
         # length

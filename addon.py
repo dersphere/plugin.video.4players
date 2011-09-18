@@ -21,7 +21,8 @@ def show_videos(category, page):
     videos, last_page_num = scraper.getVideos(category, page)
     items = [{'label': video['title'],
               'thumbnail': video['image'],
-              'info': {'duration': video['length'],
+              'info': {'originaltitle': video['title'],
+                       'duration': video['length'],
                        'date': video['date'],
                        'rating': float(video['rating']),
                        'votes': str(video['views'])},
