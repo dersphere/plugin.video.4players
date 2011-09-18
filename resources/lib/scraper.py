@@ -18,7 +18,7 @@ URL_PREFIX = 'http://www.4players.de/4players.php/tvplayer/4PlayersTV/'
 def getVideos(filter=None, page=1):
     if filter not in CATEGORIES:
         filter = CATEGORIES[0]
-    post = {'currentpage': page,
+    post = {'currentpage': str(int(page) - 1),
             'filter': filter,
             'funcname': 'aktuellevideos',
             'numcols': 5,
