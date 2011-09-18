@@ -29,23 +29,17 @@ def getVideos(filter=None, page=1):
     tree = BeautifulSoup(html)
     # last_page_num
     page_links = tree.findAll('a', {'class': 'pagenavi'})
-    pages = list()
-    for link in page_links:
-        if link.contents[0].isdigit():
-            pages.append(int(link.contents[0]))
-    last_page_num = pages.pop()
+    last_page_num = max([page_num.contents[0] for page_num in page_links \
+                        if page_num.contents[0].isdigit()])
+    # videos
     video_frames = tree.findAll('div', {'class':
                                         re.compile('^videoitemframe')})
     videos = list()
-    # videos
     for frame in video_frames:
         video_item, video_info = frame.findAll('div', recursive=False)
         link = video_info.find('div', {'class': re.compile('^title')}).a
         # title
-        if link['title'].startswith('[Video] '):
-            title = link['title'][8:]
-        else:
-            title = link['title']
+        title = link['title'].replace('[Video] ', '')
         # url
         video_page = link['href']
         url = video_page.replace(URL_PREFIX, '').replace('.html', '')
@@ -116,9 +110,7 @@ def __getAjaxContent(url, data_dict=None):
 
 def getVideoFile(page_url):
     video_page = URL_PREFIX + page_url + '.html'
-    req = urllib2.Request(video_page)
-    req.add_header('User-Agent', IPAD_USERAGENT)
-    html = urllib2.urlopen(req).read()
+    html = __getAjaxContent(video_page)
     tree = BeautifulSoup(html)
     return tree.find('video')['src']
 

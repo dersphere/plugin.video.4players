@@ -7,9 +7,9 @@ plugin = Plugin('4Players Videos', 'plugin.video.4players', __file__)
 @plugin.route('/', default=True)
 def show_categories():
     categories = scraper.getCategories()
-    category_strings = (30100, 30101, 30102, 30103, 30104, 30105, 30106, 30107,
-                        30108, 30109, 30110)
-    items = [{'label': plugin.get_string(category_strings[i]),
+    cat_ids = (30100, 30101, 30102, 30103, 30104, 30105, 30106, 30107,
+               30108, 30109, 30110)
+    items = [{'label': plugin.get_string(cat_ids[i]),
               'url': plugin.url_for('show_videos',
                                     category=category, page='1'),
              } for i, category in enumerate(categories)]
