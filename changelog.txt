@@ -1,2 +1,2 @@
-0.1.0
- First Version for Dharma xbmc.org addon-repository
+1.1.0
+ First Version for Eden-pre xbmc.org addon-repository
