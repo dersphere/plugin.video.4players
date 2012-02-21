@@ -36,7 +36,6 @@ def getVideos(filter=None, page=1):
     video_frames = section.findAll('li')
     videos = list()
     for frame in video_frames:
-        print frame
         link = frame.find('a', {'class': re.compile('tv-weiter-link')})
         # title
         title = link['title']

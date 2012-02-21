@@ -5,7 +5,6 @@ class Plugin_adv(Plugin):
 
     def add_items(self, iterable, view_mode=None, is_update=False,
                   sort_method_ids=[]):
-        print is_update
         items = []
         urls = []
         for i, li_info in enumerate(iterable):
@@ -22,7 +21,6 @@ class Plugin_adv(Plugin):
             xbmcplugin.addDirectoryItems(self.handle, items, len(items))
             for id in sort_method_ids:
                 xbmcplugin.addSortMethod(self.handle, id)
-                print 'added: %d' % id
             xbmcplugin.endOfDirectory(self.handle, updateListing=is_update)
         return urls
 
