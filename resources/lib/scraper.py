@@ -8,9 +8,8 @@ IPAD_USERAGENT = (u'Mozilla/5.0 (iPad; U; CPU OS OS 3_2 like '
                   u'HTML, like Gecko) Version/4.0.4 Mobile/7B'
                   u'367 Safari/531.21.10')
 
-CATEGORIES = ('Alle', 'TopViews', 'TopRated', 'PC-CDROM',
-              'PlayStation2', 'PlayStation3', 'Wii', '360', 'NDS',
-              'PSP', 'Video-Fazit')
+CATEGORIES = ('Alle', 'TopRated', 'TopViews', 'Video-Fazit', 'PC-CDROM',
+              'PlayStation3', '360', 'Wii', 'Handhelds')
 
 URL_PREFIX = 'http://www.4players.de/4players.php/tvplayer/'
 
@@ -22,7 +21,7 @@ def getVideos(filter=None, page=1):
             'singlefilter': filter,
             'funcname': 'aktuellevideos',
             'numcols': 5,
-            'numshown': 50,
+            'numshown': 20,
             'refreshskims': 1}
     url = 'http://www.4players.de/paginatecontent.php'
     html = __getAjaxContent(url, post)
