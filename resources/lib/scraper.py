@@ -3,10 +3,7 @@ import re
 from BeautifulSoup import BeautifulSoup
 from urllib import urlencode
 
-IPAD_USERAGENT = (u'Mozilla/5.0 (iPad; U; CPU OS OS 3_2 like '
-                  u'Mac OS X; en-us) AppleWebKit/531.21.10 (K'
-                  u'HTML, like Gecko) Version/4.0.4 Mobile/7B'
-                  u'367 Safari/531.21.10')
+USER_AGENT = 'XBMC addon plugin.video.4players'
 
 CATEGORIES = ('Alle', 'TopRated', 'TopViews', 'Video-Fazit', 'PC-CDROM',
               'PlayStation3', '360', 'Wii', 'Handhelds')
@@ -101,7 +98,7 @@ def __getAjaxContent(url, data_dict=None):
     else:
         post_data = ' '
     req = urllib2.Request(url, post_data)
-    req.add_header('User-Agent', IPAD_USERAGENT)
+    req.add_header('User-Agent', USER_AGENT)
     req.add_header('Accept', 'text/javascript, */*')
     req.add_header('Content-Type',
                    'application/x-www-form-urlencoded; charset=UTF-8')
@@ -113,10 +110,8 @@ def __getAjaxContent(url, data_dict=None):
 def getVideoFile(page_url):
     video_page = URL_PREFIX + page_url + '.html'
     html = __getAjaxContent(video_page)
-    #tree = BeautifulSoup(html)
-    #link = tree.find('script', text=re.compile('video src'))
     r = '<video src="(?P<url>[^"]+)"'
-    m = re.search(r,html)
+    m = re.search(r, html)
     url = m.groupdict()['url']
     return url
 
