@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+	<setting id="force_viewmode" type="bool" label="30100" default="true"/>
+	<setting id="quality" type="enum" label="30101" lvalues="30102|30103" default="0" />
+</settings>

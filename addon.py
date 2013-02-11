@@ -1,84 +1,107 @@
-from xbmcswift import Plugin
-import resources.lib.scraper as scraper
+from xbmcswift2 import Plugin
+from resources.lib.api import XBMC4PlayersApi, NetworkError, ApiError
+
+STRINGS = {
+    'latest_videos': 30000,
+    'next': 30001,
+}
+
+plugin = Plugin()
+api = XBMC4PlayersApi()
 
 
-class Plugin_adv(Plugin):
-
-    def add_items(self, iterable, view_mode=None, is_update=False,
-                  sort_method_ids=[]):
-        items = []
-        urls = []
-        for i, li_info in enumerate(iterable):
-            items.append(self._make_listitem(**li_info))
-            if self._mode in ['crawl', 'interactive', 'test']:
-                print '[%d] %s%s%s (%s)' % (i + 1, '', li_info.get('label'),
-                                            '', li_info.get('url'))
-                urls.append(li_info.get('url'))
-        if self._mode is 'xbmc':
-            if view_mode:
-                import xbmc
-                xbmc.executebuiltin('Container.SetViewMode(%s)' % view_mode)
-            import xbmcplugin
-            xbmcplugin.addDirectoryItems(self.handle, items, len(items))
-            for id in sort_method_ids:
-                xbmcplugin.addSortMethod(self.handle, id)
-            xbmcplugin.endOfDirectory(self.handle, updateListing=is_update)
-        return urls
+@plugin.route('/')
+def show_root_menu():
+    items = [
+        {'label': _('latest_videos'),
+         'path': plugin.url_for('latest_videos')},
+        {'label': _('popular_videos'),
+         'path': plugin.url_for('popular_videos')},
+    ]
+    return plugin.finish(items)
 
 
-plugin = Plugin_adv('4Players Videos', 'plugin.video.4players', __file__)
+@plugin.route('/latest_videos/')
+def latest_videos():
+    older_than = int(plugin.request.args.get('older_than', [0])[0])
+    videos = api.get_latest_videos(older_than=older_than)
+    most_recent_ts = min((v['ts'] for v in videos))
+    items = __format_videos(videos)
+    items.append({
+        'label': '>> %s >>' % _('next'),
+        'path': plugin.url_for(
+            endpoint='latest_videos',
+            older_than=most_recent_ts
+        )
+    })
+
+    finish_kwargs = {
+        #'sort_methods': ('DATE', 'TITLE'),
+        'update_listing': 'older_than' in plugin.request.args
+    }
+    if plugin.get_setting('force_viewmode') == 'true':
+        finish_kwargs['view_mode'] = 'thumbnail'
+    return plugin.finish(items, **finish_kwargs)
 
 
-@plugin.route('/', default=True)
-def show_categories():
-    categories = scraper.getCategories()
-    cat_ids = (30100, 30101, 30102, 30103, 30104, 30105, 30106, 30107,
-               30108)
-    items = [{'label': plugin.get_string(cat_ids[i]),
-              'url': plugin.url_for('show_videos',
-                                    category=category, page='1'),
-             } for i, category in enumerate(categories)]
-    return plugin.add_items(items)
+@plugin.route('/popular_videos/')
+def popular_videos():
+    page = int(plugin.request.args.get('page', ['1'])[0])
+    videos = api.get_popular_videos(page=page)
+    items = __format_videos(videos)
+    items.append({
+        'label': '>> %s >>' % _('next'),
+        'path': plugin.url_for(
+            endpoint='popular_videos',
+            page=(page + 1)
+        )
+    })
+
+    finish_kwargs = {
+        #'sort_methods': ('DATE', 'TITLE'),
+        'update_listing': 'page' in plugin.request.args
+    }
+    if plugin.get_setting('force_viewmode') == 'true':
+        finish_kwargs['view_mode'] = 'thumbnail'
+    return plugin.finish(items, **finish_kwargs)
 
 
-@plugin.route('/category/<category>/<page>/')
-def show_videos(category, page):
-    videos, last_page_num = scraper.getVideos(category, page)
-    items = [{'label': video['title'],
-              'thumbnail': video['image'],
-              'info': {'originaltitle': video['title'],
-                       'duration': video['length'],
-                       'date': video['date'],
-                       'rating': float(video['rating']),
-                       'votes': str(video['views'])},
-              'url': plugin.url_for('watch_video', url=video['url']),
-              'is_folder': False,
-              'is_playable': True,
-             } for video in videos]
-    if int(page) < int(last_page_num):
-        next_page = str(int(page) + 1)
-        items.insert(0, {'label': '>> %s %s >>' % (plugin.get_string(30001),
-                                                   next_page),
-                         'url': plugin.url_for('show_videos',
-                                               category=category,
-                                               page=next_page)})
-    if int(page) > 1:
-        prev_page = str(int(page) - 1)
-        items.insert(0, {'label': '<< %s %s <<' % (plugin.get_string(30001),
-                                                   prev_page),
-                         'url': plugin.url_for('show_videos',
-                                               category=category,
-                                               page=prev_page)})
-    is_update = (int(page) != 1)  # only update the listing if page is not 1
-    sort_method_ids = (21, 3, 29)  # Playlist, date, runtime
-    return plugin.add_items(items, is_update=is_update,
-                            sort_method_ids=sort_method_ids)
+@plugin.route('/play/<url>/')
+def play_video(url):
+    return plugin.set_resolved_url(url)
 
 
-@plugin.route('/watch/<url>/')
-def watch_video(url):
-    video_url = scraper.getVideoFile(url)
-    return plugin.set_resolved_url(video_url)
+def __format_videos(videos):
+    quality = ('normal', 'hq')[int(plugin.get_setting('quality'))]
+    videos = [{
+        'label': '%s: %s' % (video['game_title'], video['video_title']),
+        'thumbnail': video['thumb'],
+        'info': {
+            'original_title': video['game_title'],
+            'tagline': video['video_title'],
+            'size': video['streams'][quality]['size'],
+            'date': video['date'],
+            'genre': video['genre'],
+            'count': i,
+        },
+        'is_playable': True,
+        # 'stream_info': {
+        #     'video': {'duration': video['duration']}
+        # },
+        'path': plugin.url_for(
+            endpoint='play_video',
+            url=video['streams'][quality]['url']
+        ),
+    } for i, video in enumerate(videos)]
+    return videos
+
+
+def _(string_id):
+    if string_id in STRINGS:
+        return plugin.get_string(STRINGS[string_id])
+    else:
+        plugin.log.warning('String is missing: %s' % string_id)
+        return string_id
 
 
 if __name__ == '__main__':
