@@ -33,6 +33,7 @@ class XBMC4PlayersApi():
     USER_AGENT = 'XBMC4PlayersApi'
 
     def __init__(self):
+        self._game_infos = {}
         pass
 
     def get_systems(self):
@@ -75,6 +76,13 @@ class XBMC4PlayersApi():
         videos = self.__api_call('getVideosBySpiel', *params)['Video']
         return self.__format_videos(videos)
 
+    def _get_game_info(self, game_id):
+        params = (
+            game_id,  # game_id
+            0,  # newer than
+        )
+        return self.__api_call('getSpielinfo', *params)['GameInfo']
+
     def __format_videos(self, raw_videos):
         videos = [{
             'id': video['id'],
@@ -98,18 +106,19 @@ class XBMC4PlayersApi():
         } for video in raw_videos]
         return videos
 
-    def __format_game(self, raw_game):
-        if not isinstance(raw_game, list):
-            params = (
-                raw_game['id'],  # game_id
-                0,  # newer than
-            )
-            raw_game = self.__api_call('getSpielinfo', *params)['GameInfo']
+    def __format_game(self, game_info):
+        if not isinstance(game_info, list):
+            game_id = game_info['id']
+            if game_id in self._game_infos:
+                game_info = self._game_infos[game_id]
+            else:
+                self._game_infos[game_id] = self._get_game_info(game_id)
+            game_info = self._game_infos[game_id]
         game = {
-            'title': raw_game[0]['name'],
-            'genre': raw_game[0]['subgenre'],
-            'studio': raw_game[0]['hersteller'],
-            'id': raw_game[0]['id'],
+            'title': game_info[0]['name'],
+            'genre': game_info[0]['subgenre'],
+            'studio': game_info[0]['hersteller'],
+            'id': game_info[0]['id'],
         }
         return game
 
