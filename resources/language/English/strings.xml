@@ -8,4 +8,6 @@
     <string id="30101">Quality</string>
     <string id="30102">Normal</string>
     <string id="30103">HQ</string>
+    <!-- messages -->
+    <string id="30200">Network error</string>
 </strings>

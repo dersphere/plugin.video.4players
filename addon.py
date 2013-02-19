@@ -1,10 +1,11 @@
 from xbmcswift2 import Plugin
-from resources.lib.api import XBMC4PlayersApi, NetworkError, ApiError
+from resources.lib.api import XBMC4PlayersApi, NetworkError
 
 STRINGS = {
     'latest_videos': 30000,
     'next': 30001,
     'popular_videos': 30002,
+    'network_error': 30200,
 }
 
 plugin = Plugin()
@@ -106,4 +107,7 @@ def _(string_id):
 
 
 if __name__ == '__main__':
-    plugin.run()
+    try:
+        plugin.run()
+    except NetworkError:
+        plugin.notify(msg=_('network_error'))

@@ -28,10 +28,6 @@ class NetworkError(Exception):
     pass
 
 
-class ApiError(Exception):
-    pass
-
-
 class XBMC4PlayersApi():
 
     USER_AGENT = 'XBMC4PlayersApi'
