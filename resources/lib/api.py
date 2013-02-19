@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-#     Copyright (C) 2012 Tristan Fischer (sphere@dersphere.de)
+#     Copyright (C) 2013 Tristan Fischer (sphere@dersphere.de)
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -128,7 +128,7 @@ class XBMC4PlayersApi():
             m, s = duration_str.split(' ')[0].split(':', 1)
             return int(int(m) * 60 + int(s))
         else:
-            return int(0)
+            return 0
 
     def __api_call(self, method, *params):
         parts = [API_URL, method] + [str(i) for i in params]
@@ -149,11 +149,3 @@ class XBMC4PlayersApi():
 
 def log(msg):
     print '[XBMC4PlayersApi]: %s' % msg
-
-
-if __name__ == '__main__':
-    # API testing
-    api = XBMC4PlayersApi()
-    videos = api.get_latest_videos()
-    for v in videos:
-        print v
