@@ -84,6 +84,7 @@ def __format_videos(videos):
             'size': video['streams'][quality]['size'],
             'date': video['date'],
             'genre': video['genre'],
+            'studio': video['studio'],
             'count': i,
         },
         'is_playable': True,

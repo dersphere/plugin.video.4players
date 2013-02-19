@@ -76,6 +76,7 @@ class XBMC4PlayersApi():
             'duration': self.__format_duration(video['laufzeit']),
             'thumb': self.__format_thumb(video['thumb']),
             'genre': video['spielinfo'][0]['subgenre'],
+            'studio': video['spielinfo'][0]['hersteller'],
             'streams': {
                 'normal': {
                     'url': video['url'],
