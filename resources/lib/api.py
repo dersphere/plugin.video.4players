@@ -104,8 +104,11 @@ class XBMC4PlayersApi():
 
     @staticmethod
     def __format_duration(duration_str):
-        m, s = duration_str.split(' ')[0].split(':')
-        return int(int(m) * 60 + int(s))
+        if ':' in duration_str:
+            m, s = duration_str.split(' ')[0].split(':', 1)
+            return int(int(m) * 60 + int(s))
+        else:
+            return int(0)
 
     def __api_call(self, method, *params):
         parts = [API_URL, method] + [str(i) for i in params]
