@@ -2,6 +2,7 @@
 <strings>
     <string id="30000">Latest Videos</string>
     <string id="30001">Next Videos</string>
+    <string id="30002">Popular Videos</string>
     <!-- Settings -->
     <string id="30100">Force Viewmode to "Thumbnail"</string>
     <string id="30101">Quality</string>

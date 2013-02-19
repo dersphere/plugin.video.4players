@@ -4,6 +4,7 @@ from resources.lib.api import XBMC4PlayersApi, NetworkError, ApiError
 STRINGS = {
     'latest_videos': 30000,
     'next': 30001,
+    'popular_videos': 30002,
 }
 
 plugin = Plugin()
