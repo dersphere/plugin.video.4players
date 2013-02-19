@@ -6,6 +6,7 @@ STRINGS = {
     'next': 30001,
     'popular_videos': 30002,
     'network_error': 30200,
+    'videos_by_game': 30003,
 }
 
 plugin = Plugin()
@@ -24,21 +25,24 @@ def show_root_menu():
 
 
 @plugin.route('/latest_videos/')
-def latest_videos():
+@plugin.route('/latest_videos/<game_id>/', name='videos_by_game')
+def latest_videos(game_id=None):
     older_than = int(plugin.request.args.get('older_than', [0])[0])
-    videos = api.get_latest_videos(older_than=older_than)
+    if game_id:
+        videos = api.get_videos_by_game(older_than=older_than, game_id=game_id)
+    else:
+        videos = api.get_latest_videos(older_than=older_than)
     most_recent_ts = min((v['ts'] for v in videos))
     items = __format_videos(videos)
-    items.append({
-        'label': '>> %s >>' % _('next'),
-        'path': plugin.url_for(
-            endpoint='latest_videos',
-            older_than=most_recent_ts
-        )
-    })
-
+    if not game_id:
+        items.append({
+            'label': '>> %s >>' % _('next'),
+            'path': plugin.url_for(
+                endpoint='latest_videos',
+                older_than=most_recent_ts
+            )
+        })
     finish_kwargs = {
-        #'sort_methods': ('DATE', 'TITLE'),
         'update_listing': 'older_than' in plugin.request.args
     }
     if plugin.get_setting('force_viewmode') == 'true':
@@ -60,7 +64,6 @@ def popular_videos():
     })
 
     finish_kwargs = {
-        #'sort_methods': ('DATE', 'TITLE'),
         'update_listing': 'page' in plugin.request.args
     }
     if plugin.get_setting('force_viewmode') == 'true':
@@ -76,18 +79,25 @@ def play_video(url):
 def __format_videos(videos):
     quality = ('normal', 'hq')[int(plugin.get_setting('quality'))]
     videos = [{
-        'label': '%s: %s' % (video['game_title'], video['video_title']),
+        'label': '%s: %s' % (video['game']['title'], video['video_title']),
         'thumbnail': video['thumb'],
         'info': {
-            'original_title': video['game_title'],
+            'original_title': video['game']['title'],
             'tagline': video['video_title'],
             'size': video['streams'][quality]['size'],
             'date': video['date'],
-            'genre': video['genre'],
-            'studio': video['studio'],
+            'genre': video['game']['genre'],
+            'studio': video['game']['studio'],
             'count': i,
         },
         'is_playable': True,
+        'context_menu': [(
+            _('videos_by_game'),
+            'Container.Update(%s)' % plugin.url_for(
+                endpoint='videos_by_game',
+                game_id=str(video['game']['id'])
+            )
+        )],
         # 'stream_info': {
         #     'video': {'duration': video['duration']}
         # },

@@ -43,7 +43,7 @@ class XBMC4PlayersApi():
 
     def get_latest_videos(self, limit=50, older_than=0):
         params = (
-            0,  # game_id
+            0,  # video_id
             limit,  # limit
             0,  # newer_than
             older_than,  # older_than
@@ -65,18 +65,26 @@ class XBMC4PlayersApi():
         videos = self.__api_call('getVideosByViews', *params)['Video']
         return self.__format_videos(videos)
 
+    def get_videos_by_game(self, game_id, limit=50, older_than=0):
+        params = (
+            game_id,  # game_id
+            limit,  # limit
+            0,  # newer_than
+            older_than,  # older_than
+        )
+        videos = self.__api_call('getVideosBySpiel', *params)['Video']
+        return self.__format_videos(videos)
+
     def __format_videos(self, raw_videos):
         videos = [{
             'id': video['id'],
-            'game_title': video['spielinfo'][0]['name'],
             'video_title': video['beschreibung'],
             'rating': video['rating'],
             'ts': video['datum'],
             'date': self.__format_date(video['datum']),
             'duration': self.__format_duration(video['laufzeit']),
             'thumb': self.__format_thumb(video['thumb']),
-            'genre': video['spielinfo'][0]['subgenre'],
-            'studio': video['spielinfo'][0]['hersteller'],
+            'game': self.__format_game(video['spielinfo']),
             'streams': {
                 'normal': {
                     'url': video['url'],
@@ -89,6 +97,21 @@ class XBMC4PlayersApi():
             }
         } for video in raw_videos]
         return videos
+
+    def __format_game(self, raw_game):
+        if not isinstance(raw_game, list):
+            params = (
+                raw_game['id'],  # game_id
+                0,  # newer than
+            )
+            raw_game = self.__api_call('getSpielinfo', *params)['GameInfo']
+        game = {
+            'title': raw_game[0]['name'],
+            'genre': raw_game[0]['subgenre'],
+            'studio': raw_game[0]['hersteller'],
+            'id': raw_game[0]['id'],
+        }
+        return game
 
     @staticmethod
     def __format_thumb(url):
@@ -120,10 +143,7 @@ class XBMC4PlayersApi():
         except URLError, error:
             raise NetworkError('URLError: %s' % error)
         log('got %d bytes' % len(response))
-        try:
-            json_data = json.loads(response)
-        except:  # fixme
-            raise ApiError
+        json_data = json.loads(response)
         return json_data
 
 
