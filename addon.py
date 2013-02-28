@@ -26,6 +26,8 @@ STRINGS = {
     'popular_videos': 30002,
     'network_error': 30200,
     'videos_by_game': 30003,
+    'search_by_game': 30004,
+    'enter_game_title': 30005,
 }
 
 plugin = Plugin()
@@ -39,6 +41,8 @@ def show_root_menu():
          'path': plugin.url_for('latest_videos')},
         {'label': _('popular_videos'),
          'path': plugin.url_for('popular_videos')},
+        {'label': _('search_by_game'),
+         'path': plugin.url_for('search_by_game')},
     ]
     return plugin.finish(items)
 
@@ -90,6 +94,28 @@ def popular_videos():
     return plugin.finish(items, **finish_kwargs)
 
 
+@plugin.route('/search/')
+def search_by_game():
+    search_string = plugin.keyboard(heading=_('enter_game_title'))
+    if search_string:
+        url = plugin.url_for(
+            endpoint='show_games',
+            search_string=search_string
+        )
+        plugin.redirect(url)
+
+
+@plugin.route('/search/<search_string>/')
+def show_games(search_string):
+    games = api.get_games(search_string)
+    print games
+    items = __format_games(games)
+    finish_kwargs = {}
+    if plugin.get_setting('force_viewmode') == 'true':
+        finish_kwargs['view_mode'] = 'thumbnail'
+    return plugin.finish(items, **finish_kwargs)
+
+
 @plugin.route('/play/<url>')
 def play_video(url):
     return plugin.set_resolved_url(url)
@@ -126,6 +152,24 @@ def __format_videos(videos):
         ),
     } for i, video in enumerate(videos)]
     return videos
+
+
+def __format_games(games):
+    games = [{
+        'label': game['title'],
+        'thumbnail': game['thumb'],
+        'info': {
+            'original_title': game['title'],
+            'genre': game['genre'],
+            'studio': game['studio'],
+            'count': i,
+        },
+        'path': plugin.url_for(
+            endpoint='videos_by_game',
+            game_id=str(game['id'])
+        ),
+    } for i, game in enumerate(games)]
+    return games
 
 
 def _(string_id):
