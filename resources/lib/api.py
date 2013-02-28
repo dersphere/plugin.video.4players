@@ -32,6 +32,7 @@ class NetworkError(Exception):
 class XBMC4PlayersApi(object):
 
     USER_AGENT = 'XBMC4PlayersApi'
+    LIMIT = 50
 
     def __init__(self):
         self._game_infos = {}
@@ -43,7 +44,7 @@ class XBMC4PlayersApi(object):
             'name': system['longname']
         } for system in self.__api_call('getSysteme')['Systeme']]
 
-    def get_latest_videos(self, limit=50, older_than=0):
+    def get_latest_videos(self, limit=LIMIT, older_than=0):
         params = (
             0,  # video_id
             limit,  # limit
@@ -56,7 +57,7 @@ class XBMC4PlayersApi(object):
         videos = self.__api_call('getVideos', *params)['Video']
         return self.__format_videos(videos)
 
-    def get_popular_videos(self, limit=50, page=1):
+    def get_popular_videos(self, limit=LIMIT, page=1):
         offset = int(limit) * (int(page) - 1)
         params = (
             limit,  # limit
@@ -67,7 +68,7 @@ class XBMC4PlayersApi(object):
         videos = self.__api_call('getVideosByViews', *params)['Video']
         return self.__format_videos(videos)
 
-    def get_videos_by_game(self, game_id, limit=50, older_than=0):
+    def get_videos_by_game(self, game_id, limit=LIMIT, older_than=0):
         params = (
             game_id,  # game_id
             limit,  # limit
@@ -77,7 +78,7 @@ class XBMC4PlayersApi(object):
         videos = self.__api_call('getVideosBySpiel', *params)['Video']
         return self.__format_videos(videos)
 
-    def get_games(self, search_string, limit=50):
+    def get_games(self, search_string, limit=LIMIT):
         params = (
             search_string,  # search_string
             limit  # limit

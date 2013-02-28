@@ -57,11 +57,12 @@ def latest_videos(game_id=None):
         videos = api.get_latest_videos(older_than=older_than)
     most_recent_ts = min((v['ts'] for v in videos))
     items = __format_videos(videos)
-    if not game_id:
+    if len(items) == api.LIMIT:
         items.append({
             'label': '>> %s >>' % _('next'),
             'path': plugin.url_for(
                 endpoint='latest_videos',
+                game_id=game_id,
                 older_than=most_recent_ts
             )
         })
