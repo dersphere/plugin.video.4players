@@ -19,6 +19,7 @@
 
 import json
 from datetime import date
+from urllib import quote
 from urllib2 import urlopen, Request, HTTPError, URLError
 
 API_URL = 'http://app.4players.de/services/app/data.php'
@@ -140,7 +141,7 @@ class XBMC4PlayersApi():
             return 0
 
     def __api_call(self, method, *params):
-        parts = [API_URL, method] + [str(i) for i in params]
+        parts = [API_URL, method] + [quote(str(p)) for p in params]
         url = '/'.join(parts)
         req = Request(url)
         req.add_header('User Agent', self.USER_AGENT)
