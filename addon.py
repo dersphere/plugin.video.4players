@@ -28,6 +28,7 @@ STRINGS = {
     'videos_by_game': 30003,
     'search_by_game': 30004,
     'enter_game_title': 30005,
+    'reviews': 30006,
 }
 
 plugin = Plugin()
@@ -39,6 +40,8 @@ def show_root_menu():
     items = [
         {'label': _('latest_videos'),
          'path': plugin.url_for('latest_videos')},
+        {'label': _('reviews'),
+         'path': plugin.url_for('reviews')},
         {'label': _('popular_videos'),
          'path': plugin.url_for('popular_videos')},
         {'label': _('search_by_game'),
@@ -47,12 +50,15 @@ def show_root_menu():
     return plugin.finish(items)
 
 
-@plugin.route('/latest_videos/')
+@plugin.route('/latest_reviews/', name='reviews', options={'reviews': True})
+@plugin.route('/latest_videos/', name='latest_videos')
 @plugin.route('/latest_videos/<game_id>/', name='videos_by_game')
-def latest_videos(game_id=None):
+def latest_videos(game_id=None, reviews=False):
     older_than = int(plugin.request.args.get('older_than', [0])[0])
     if game_id:
         videos = api.get_videos_by_game(older_than=older_than, game_id=game_id)
+    elif reviews:
+        videos = api.get_latest_reviews(older_than=older_than)
     else:
         videos = api.get_latest_videos(older_than=older_than)
     most_recent_ts = min((v['ts'] for v in videos))

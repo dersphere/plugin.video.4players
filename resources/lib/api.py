@@ -57,6 +57,19 @@ class XBMC4PlayersApi(object):
         videos = self.__api_call('getVideos', *params)['Video']
         return self.__format_videos(videos)
 
+    def get_latest_reviews(self, limit=LIMIT, older_than=0):
+        params = (
+            0,  # video_id
+            limit,  # limit
+            0,  # newer_than
+            older_than,  # older_than
+            1,  # reviews_only
+            0,  # system filter
+            1,  # include spielinfo
+        )
+        videos = self.__api_call('getVideos', *params)['Video']
+        return self.__format_videos(videos)
+
     def get_popular_videos(self, limit=LIMIT, page=1):
         offset = int(limit) * (int(page) - 1)
         params = (
