@@ -23,6 +23,7 @@ from urllib import quote
 from urllib2 import urlopen, Request, HTTPError, URLError
 
 API_URL = 'http://app.4players.de/services/app/data.php'
+USER_AGENT = 'XBMC4PlayersApi'
 
 
 class NetworkError(Exception):
@@ -31,7 +32,6 @@ class NetworkError(Exception):
 
 class XBMC4PlayersApi(object):
 
-    USER_AGENT = 'XBMC4PlayersApi'
     LIMIT = 50
 
     def __init__(self):
@@ -161,11 +161,12 @@ class XBMC4PlayersApi(object):
         else:
             return 0
 
-    def __api_call(self, method, *params):
+    @staticmethod
+    def __api_call(method, *params):
         parts = [API_URL, method] + [quote(str(p)) for p in params]
         url = '/'.join(parts)
         req = Request(url)
-        req.add_header('User Agent', self.USER_AGENT)
+        req.add_header('User Agent', USER_AGENT)
         log('Opening URL: %s' % url)
         try:
             response = urlopen(req).read()

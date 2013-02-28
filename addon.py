@@ -109,7 +109,6 @@ def search_by_game():
 @plugin.route('/search/<search_string>/')
 def show_games(search_string):
     games = api.get_games(search_string)
-    print games
     items = __format_games(games)
     finish_kwargs = {}
     if plugin.get_setting('force_viewmode', bool):
