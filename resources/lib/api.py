@@ -29,7 +29,7 @@ class NetworkError(Exception):
     pass
 
 
-class XBMC4PlayersApi():
+class XBMC4PlayersApi(object):
 
     USER_AGENT = 'XBMC4PlayersApi'
 
@@ -77,6 +77,14 @@ class XBMC4PlayersApi():
         videos = self.__api_call('getVideosBySpiel', *params)['Video']
         return self.__format_videos(videos)
 
+    def get_games(self, search_string, limit=50):
+        params = (
+            search_string,  # search_string
+            limit  # limit
+        )
+        games = self.__api_call('getSpieleBySuchbegriff', *params)['GameInfo']
+        return self.__format_games(games)
+
     def _get_game_info(self, game_id):
         params = (
             game_id,  # game_id
@@ -107,6 +115,16 @@ class XBMC4PlayersApi():
         } for video in raw_videos]
         return videos
 
+    def __format_games(self, raw_games):
+        games = [{
+            'id': game['id'],
+            'title': game['name'],
+            'thumb': game['systeme'][0]['cover_big'],
+            'genre': game['subgenre'],
+            'studio': game['hersteller']
+        } for game in raw_games]
+        return games
+
     def __format_game(self, game_info):
         if not isinstance(game_info, list):
             game_id = game_info['id']
@@ -115,11 +133,13 @@ class XBMC4PlayersApi():
             else:
                 self._game_infos[game_id] = self._get_game_info(game_id)
             game_info = self._game_infos[game_id]
+        else:
+            self._game_infos[game_info[0]['id']] = game_info
         game = {
+            'id': game_info[0]['id'],
             'title': game_info[0]['name'],
             'genre': game_info[0]['subgenre'],
             'studio': game_info[0]['hersteller'],
-            'id': game_info[0]['id'],
         }
         return game
 
