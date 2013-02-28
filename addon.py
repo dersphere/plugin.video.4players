@@ -69,7 +69,7 @@ def latest_videos(game_id=None):
     finish_kwargs = {
         'update_listing': 'older_than' in plugin.request.args
     }
-    if plugin.get_setting('force_viewmode') == 'true':
+    if plugin.get_setting('force_viewmode', bool):
         finish_kwargs['view_mode'] = 'thumbnail'
     return plugin.finish(items, **finish_kwargs)
 
@@ -90,7 +90,7 @@ def popular_videos():
     finish_kwargs = {
         'update_listing': 'page' in plugin.request.args
     }
-    if plugin.get_setting('force_viewmode') == 'true':
+    if plugin.get_setting('force_viewmode', bool):
         finish_kwargs['view_mode'] = 'thumbnail'
     return plugin.finish(items, **finish_kwargs)
 
@@ -112,7 +112,7 @@ def show_games(search_string):
     print games
     items = __format_games(games)
     finish_kwargs = {}
-    if plugin.get_setting('force_viewmode') == 'true':
+    if plugin.get_setting('force_viewmode', bool):
         finish_kwargs['view_mode'] = 'thumbnail'
     return plugin.finish(items, **finish_kwargs)
 
@@ -123,7 +123,7 @@ def play_video(url):
 
 
 def __format_videos(videos):
-    quality = ('normal', 'hq')[int(plugin.get_setting('quality'))]
+    quality = plugin.get_setting('quality', choices=('normal', 'hq'))
     videos = [{
         'label': '%s: %s' % (video['game']['title'], video['video_title']),
         'thumbnail': video['thumb'],
@@ -144,9 +144,9 @@ def __format_videos(videos):
                 game_id=str(video['game']['id'])
             )
         )],
-        # 'stream_info': {
-        #     'video': {'duration': video['duration']}
-        # },
+        'stream_info': {
+            'video': {'duration': video['duration']}
+        },
         'path': plugin.url_for(
             endpoint='play_video',
             url=video['streams'][quality]['url']
