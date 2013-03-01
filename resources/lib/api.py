@@ -25,6 +25,12 @@ from urllib2 import urlopen, Request, HTTPError, URLError
 API_URL = 'http://app.4players.de/services/app/data.php'
 USER_AGENT = 'XBMC4PlayersApi'
 
+SYSTEMS = (
+    '360', 'PC-CDROM', 'iPhone', 'iPad', 'Android', '3DS', 'NDS', 'Wii_U',
+    'PlayStation3', 'PlayStation4', 'PSP', 'PS_Vita', 'Spielkultur',
+    'WindowsPhone7', 'XBox', 'Wii', 'PlayStation2',
+)
+
 
 class NetworkError(Exception):
     pass
@@ -36,13 +42,11 @@ class XBMC4PlayersApi(object):
 
     def __init__(self):
         self._game_infos = {}
+        self._systems = []
         pass
 
-    def get_systems(self):
-        return [{
-            'id': system['shortname'],
-            'name': system['longname']
-        } for system in self.__api_call('getSysteme')['Systeme']]
+    def set_systems(self, system_list):
+        self._systems = system_list
 
     def get_latest_videos(self, limit=LIMIT, older_than=0):
         params = (
@@ -51,7 +55,7 @@ class XBMC4PlayersApi(object):
             0,  # newer_than
             older_than,  # older_than
             0,  # reviews_only
-            0,  # system filter
+            self.systems,  # system filter
             1,  # include spielinfo
         )
         videos = self.__api_call('getVideos', *params)['Video']
@@ -64,7 +68,7 @@ class XBMC4PlayersApi(object):
             0,  # newer_than
             older_than,  # older_than
             1,  # reviews_only
-            0,  # system filter
+            self.systems,  # system filter
             1,  # include spielinfo
         )
         videos = self.__api_call('getVideos', *params)['Video']
@@ -75,7 +79,7 @@ class XBMC4PlayersApi(object):
         params = (
             limit,  # limit
             offset,  # offset
-            0,  # system filter
+            self.systems,  # system filter
             1,  # include spielinfo
         )
         videos = self.__api_call('getVideosByViews', *params)['Video']
@@ -156,6 +160,13 @@ class XBMC4PlayersApi(object):
             'studio': game_info[0]['hersteller'],
         }
         return game
+
+    @property
+    def systems(self):
+        if self._systems and not self._systems == SYSTEMS:
+            return ','.join((s for s in self._systems if s in SYSTEMS))
+        else:
+            return 0
 
     @staticmethod
     def __format_thumb(url):

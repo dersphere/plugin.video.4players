@@ -18,7 +18,7 @@
 #
 
 from xbmcswift2 import Plugin
-from resources.lib.api import XBMC4PlayersApi, NetworkError
+from resources.lib.api import XBMC4PlayersApi, NetworkError, SYSTEMS
 
 STRINGS = {
     'latest_videos': 30000,
@@ -178,6 +178,17 @@ def __format_games(games):
     return games
 
 
+def __get_enabled_systems():
+    if plugin.get_setting('system_filter_enabled', bool):
+        enabled_systems = []
+        for system in SYSTEMS:
+            s = 'show_%s' % system.lower()
+            if plugin.get_setting(s, bool):
+                enabled_systems.append(system)
+        return enabled_systems
+    return SYSTEMS
+
+
 def _(string_id):
     if string_id in STRINGS:
         return plugin.get_string(STRINGS[string_id])
@@ -188,6 +199,7 @@ def _(string_id):
 
 if __name__ == '__main__':
     try:
+        api.set_systems(__get_enabled_systems())
         plugin.run()
     except NetworkError:
         plugin.notify(msg=_('network_error'))
