@@ -133,13 +133,20 @@ def __format_videos(videos):
         'label': '%s: %s' % (video['game']['title'], video['video_title']),
         'thumbnail': video['thumb'],
         'info': {
-            'original_title': video['game']['title'],
+            'title': video['game']['title'],
             'tagline': video['video_title'],
             'size': video['streams'][quality]['size'],
             'date': video['date'],
             'genre': video['game']['genre'],
             'studio': video['game']['studio'],
+            'rating': float(video['rating']),
+            'votes': video['play_count'],
             'count': i,
+            'plot': '[CR]'.join((
+                'Date: %s' % video['date'],
+                'Size: %d MB' % (video['streams'][quality]['size'] / 1048576),
+                'Length: %s' % video['duration_str'],
+            )),
         },
         'is_playable': True,
         'context_menu': [(

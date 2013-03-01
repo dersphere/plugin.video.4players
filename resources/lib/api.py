@@ -115,9 +115,11 @@ class XBMC4PlayersApi(object):
             'id': video['id'],
             'video_title': video['beschreibung'],
             'rating': video['rating'],
+            'play_count': video['counter'],
             'ts': video['datum'],
             'date': self.__format_date(video['datum']),
             'duration': self.__format_duration(video['laufzeit']),
+            'duration_str': video['laufzeit'],
             'thumb': self.__format_thumb(video['thumb']),
             'game': self.__format_game(video['spielinfo']),
             'streams': {
