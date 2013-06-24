@@ -1,3 +1,8 @@
+2.0.2 (24.06.2013)
+ added translations
+ changed default video quality to HQ
+ fixed potential plugin error
+
 2.0.1 (23.03.2013)
  Code rewrite (using dedicated API)
  New menu structure
