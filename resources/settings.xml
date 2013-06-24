@@ -2,7 +2,7 @@
 <settings>
 	<category label="30300">
 		<setting id="force_viewmode" type="bool" label="30100" default="true"/>
-		<setting id="quality" type="enum" label="30101" lvalues="30102|30103" default="0"/>
+		<setting id="quality2" type="enum" label="30101" lvalues="30102|30103" default="1"/>
 	</category>
 	<category label="30301">
 		<setting id="system_filter_enabled" type="bool" label="30200" default="false"/>
